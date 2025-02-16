@@ -11,7 +11,6 @@
   retries: 10
   delay: 5
   until: kubectl_status.rc == 0
-  when: self_signed_cert == false
   
 - name: Add Cert-Manager Helm repository
   kubernetes.core.helm_repository:
@@ -20,7 +19,6 @@
     state: present  # Ensure repository is added
   environment:
     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
-  when: self_signed_cert == false
 
 - name: Deploy Cert-Manager chart inside cert-manager namespace
   kubernetes.core.helm:
@@ -36,4 +34,3 @@
       installCRDs: true  # Additional values to install CRDs
   environment:
     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
-  when: self_signed_cert == false

@@ -2,9 +2,9 @@
 
 USER=adminuser
 NODES=(
-    "192.168.0.34"
-    "192.168.0.33"
-    "192.168.0.32"
+    "192.168.0.39"
+    "192.168.0.40"
+    "192.168.0.41"
 )
 
 # Path to the SSH key
@@ -19,7 +19,7 @@ fi
 # Copy the SSH key to each node
 for NODE in "${NODES[@]}"; do
     echo "Copying SSH key to $NODE..."
-    ssh-copy-id -i "$SSH_KEY" "$USER@$NODE"
+    ssh-copy-id -f -i "$SSH_KEY" "$USER@$NODE"
     if [[ $? -eq 0 ]]; then
         echo "Successfully copied SSH key to $NODE."
     else
