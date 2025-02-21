@@ -17,6 +17,7 @@
     - helm
     - helm_plugins
     - cert_manager
+    - cloudflare-tunnel
     - smb_driver
     - longhorn
     - rancher

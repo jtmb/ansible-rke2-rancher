@@ -11,6 +11,7 @@
   retries: 10
   delay: 5
   until: kubectl_status.rc == 0
+  tags: rancher
 
 - name: Add Rancher Helm repository
   kubernetes.core.helm_repository:
@@ -19,6 +20,7 @@
     state: present  # Ensure the repository is added
   environment:
     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+  tags: rancher
 
 - name: Create Rancher namespace
   kubernetes.core.k8s:
@@ -28,6 +30,7 @@
     state: present  # Ensure the namespace exists
   environment:
     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+  tags: rancher
 
 - name: Update the repository cache
   kubernetes.core.helm:
@@ -37,6 +40,7 @@
     update_repo_cache: true  # Update the Helm repo cache
   environment:
     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+  tags: rancher
 
 - name: Deploy Rancher chart inside cattle-system namespace
   kubernetes.core.helm:
@@ -65,7 +69,7 @@
   retries: 10
   delay: 30  # Wait 30 seconds before retrying
   until: result is succeeded
-  
+  tags: rancher
 
 - name: Deploy Rancher chart inside cattle-system namespace
   kubernetes.core.helm:
@@ -90,6 +94,7 @@
   retries: 10
   delay: 30  # Wait 30 seconds before retrying
   until: result is succeeded
+  tags: rancher
 
 - name: Set agent-tls-mode to system-store
   shell: |
@@ -101,3 +106,4 @@
   retries: 10
   delay: 5
   until: result.rc == 0
+  tags: rancher

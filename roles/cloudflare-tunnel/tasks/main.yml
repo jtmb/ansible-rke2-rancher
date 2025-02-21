@@ -1,0 +1,100 @@
+- name: Create Rancher namespace
+  kubernetes.core.k8s:
+    name: cattle-system
+    api_version: v1
+    kind: Namespace
+    state: present  # Ensure the namespace exists
+  environment:
+    KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+
+- name: Deploy cloudflared-tunnel
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubectl_config }}"  # Specify the kubectl config file
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cloudflared-tunnel
+        namespace: cattle-system
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: cloudflared-tunnel
+        template:
+          metadata:
+            labels:
+              app: cloudflared-tunnel
+          spec:
+            containers:
+              - name: cloudflared
+                image: cloudflare/cloudflared:latest
+                command:
+                  - "cloudflared"
+                  - "tunnel"
+                  - "--no-autoupdate"
+                  - "run"
+                  - "--token"
+                  - "{{TUNNEL_TOKEN}}"  # Direct environment variable substitution
+  environment:
+    KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+  tags: cloudflared-tunnel
+
+
+# - name: Deploy Service for Rancher
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubectl_config }}"
+#     state: present
+#     definition:
+#       apiVersion: v1
+#       kind: Service
+#       metadata:
+#         name: rancher-tunnel-service
+#         namespace: cattle-system
+#       spec:
+#         selector:
+#           app: rancher
+#         ports:
+#           - protocol: TCP
+#             port: 80
+#             targetPort: 80
+#         type: ClusterIP
+#   environment:
+#     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+#   tags: cloudflared-tunnel
+
+# - name: Deploy Ingress for Rancher
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubectl_config }}"
+#     state: present
+#     definition:
+#       apiVersion: networking.k8s.io/v1
+#       kind: Ingress
+#       metadata:
+#         name: rancher-tunnel-ingress
+#         namespace: website-stack
+#         annotations:
+#           nginx.ingress.kubernetes.io/rewrite-target: "/"
+#           cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Specify your ClusterIssuer
+#           nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Automatically redirect HTTP to HTTPS
+#       spec:
+#         rules:
+#           - host: "rancher-dev.jtmb.cc"  # Replace with your domain
+#             http:
+#               paths:
+#                 - path: /
+#                   pathType: Prefix
+#                   backend:
+#                     service:
+#                       name: rancher-tunnel-service
+#                       port:
+#                         number: 80
+#         tls:
+#           - hosts:
+#               - "rancher-dev.jtmb.cc"  # Replace with your domain
+#             secretName: rancher-tunnel-tls  # This is the name of the TLS certificate secret
+#   environment:
+#     KUBECONFIG: "{{ kubectl_config }}"  # Use the kubectl config environment variable
+#   tags: cloudflared-tunnel
+

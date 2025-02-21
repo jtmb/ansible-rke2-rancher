@@ -1,15 +1,15 @@
 # Define parameters
-$ControlPlaneVMs = 3
-$ClusterVMs = 0
+$ControlPlaneVMs = 0
+$ClusterVMs = 1
 $ControlPlaneName = "RKE2 Server"
-$ClusterName = "RKE2 LB"
+$ClusterName = "RKE2 LB3"
 $MemoryControlPlane = 4 * 1GB # 2 GB in bytes
 $MemoryCluster = 2 * 1GB      # 4 GB in bytes
 $CPUControlPlane = 4
 $CPUCluster = 4
 $VMPath = "D:\hyper-V\vm_drives" # Path to store VMs and VHDs
 $VHDSize = 40GB                 # Size of the virtual hard disk
-$UbuntuISOPath = "D:\ISO\ubuntu-24.04-live-server-amd64.iso" # Path to Ubuntu Server ISO
+$UbuntuISOPath = "E:\ISO\ubuntu-24.04-live-server-amd64.iso" # Path to Ubuntu Server ISO
 
 # Ensure the VM path exists
 if (-not (Test-Path -Path $VMPath)) {
